@@ -172,67 +172,77 @@
 
 
 <div id="reportArea">
-            <div class="card-custom mt-3 mb-5">
-    <h4 class="text-center">
-        <i class="fas fa-users"></i> Daftar Kandidat
-    </h4>
 
-    <div class="table-responsive mt-3">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Pengalaman</th>
-                    <th>Pendidikan</th>
-                    <th>Teknis</th>
-                    <th>Soft Skills</th>
-                </tr>
-            </thead>
-            <tbody id="candidateList">
-                <!-- Data kandidat tampil disini -->
-            </tbody>
-        </table>
+    <!-- ================= DAFTAR KANDIDAT ================= -->
+    <div class="card-custom mt-3 mb-4">
+        <h4 class="text-center mb-3">
+            <i class="fas fa-users"></i> Daftar Kandidat
+        </h4>
+
+        <div class="table-responsive">
+            <table class="table table-striped align-middle text-center">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Pengalaman</th>
+                        <th>Pendidikan</th>
+                        <th>Teknis</th>
+                        <th>Soft Skills</th>
+                    </tr>
+                </thead>
+                <tbody id="candidateList">
+                    <!-- Data kandidat -->
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <!-- ================= HASIL TOPSIS ================= -->
+    <div class="card-custom mb-5">
+        <h3 class="text-center mb-3">
+            <i class="fas fa-trophy text-warning"></i> Hasil Ranking TOPSIS
+        </h3>
+
+        <p class="text-muted small text-center">
+            Pengalaman (0.3) • Pendidikan (0.2) • Teknis (0.3) • Soft Skills (0.2)
+        </p>
+
+        <button id="calculateBtn" class="btn btn-custom w-100 mb-3">
+            <i class="fas fa-calculator"></i> Hitung Ranking
+        </button>
+
+        <div class="loading text-center my-3" id="loading">
+            <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+            <p class="mt-2">Menghitung...</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped align-middle text-center" id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Nama</th>
+                        <th>Nilai Ci</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                    <!-- Hasil -->
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-success w-100 mt-3" id="downloadPdfBtn">
+            <i class="fas fa-file-pdf"></i> Download Laporan PDF
+        </button>
+
+        <hr>
+
+        <h4 class="text-center mt-4">Proses Perhitungan TOPSIS</h4>
+        <div id="topsisSteps" class="mt-3"></div>
+    </div>
+
 </div>
 
-
-
-            <div class="col-12 mb-4">
-                <div class="card-custom">
-                    <h3 class="text-center mb-4"><i class="fas fa-trophy text-warning"></i> Hasil Ranking TOPSIS</h3>
-                    <p class="text-muted">Kriteria: Pengalaman (Benefit, Bobot 0.3), Pendidikan (Benefit, 0.2), Teknis (Benefit, 0.3), Soft Skills (Benefit, 0.2)</p>
-                    <button id="calculateBtn" class="btn btn-custom mb-3 w-100"><i class="fas fa-calculator"></i> Hitung Ranking</button>
-                    <div class="loading" id="loading">
-                        <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
-                        <p>Menghitung...</p>
-                    </div>
-                    <table class="table table-striped mt-3" id="resultsTable">
-                        <thead>
-                            <tr>
-                                <th><i class="fas fa-medal"></i> Ranking</th>
-                                <th><i class="fas fa-user"></i> Nama Kandidat</th>
-                                <th><i class="fas fa-chart-bar"></i> Closeness Coefficient</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultsBody">
-                            <!-- Hasil akan muncul di sini -->
-                        </tbody>
-                    </table>
-
-                    <button class="btn btn-success w-100 mt-3" id="downloadPdfBtn">
-                        <i class="fas fa-file-pdf"></i> Download Laporan PDF
-                    </button>
-
-
-                    <!-- TEST --->
-                     <hr>
-                        <h4 class="text-center mt-4">📊 Proses Perhitungan TOPSIS</h4>
-                        <div id="topsisSteps"></div>
-                     <!-- END TEST --->
-
-                </div>
-            </div>
-</div>
             <div class="alert alert-secondary mt-4">
     <h5><i class="fas fa-list-ol"></i> Skala Penilaian Kriteria</h5>
 
