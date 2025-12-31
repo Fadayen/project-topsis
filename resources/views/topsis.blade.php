@@ -591,6 +591,9 @@ html += `
 </div>
 `;
 
+// ✅ WAJIB ADA
+document.getElementById("topsisSteps").innerHTML = html;
+
 
             // ================= RANKING =================
             const ranked = candidates.map((c, i) => ({ ...c, closeness: closeness[i] }))
