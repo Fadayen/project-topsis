@@ -136,8 +136,8 @@
     </section>
 
     <div class="container my-5 fade-in">
-        <div class="row">
-            <div class="col-md-6 mb-4">
+        <div class="row flex-column">
+            <div class="col-12 mb-4">
                 <div class="card-custom">
                     <h3 class="text-center mb-4"><i class="fas fa-user-plus text-primary"></i> Input Kandidat</h3>
                     <form id="candidateForm">
@@ -169,7 +169,29 @@
                     </form>
                 </div>
             </div>
-            <div class="col-md-6 mb-4">
+
+
+<div id="reportArea">
+            <div class="card-custom mt-3 mb-5">
+    <h4 class="text-center"><i class="fas fa-users"></i> Daftar Kandidat</h4>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Pengalaman</th>
+                <th>Pendidikan</th>
+                <th>Teknis</th>
+                <th>Soft Skills</th>
+            </tr>
+        </thead>
+        <tbody id="candidateList">
+            <!-- Data kandidat tampil disini -->
+        </tbody>
+    </table>
+</div>
+
+
+            <div class="col-12 mb-4">
                 <div class="card-custom">
                     <h3 class="text-center mb-4"><i class="fas fa-trophy text-warning"></i> Hasil Ranking TOPSIS</h3>
                     <p class="text-muted">Kriteria: Pengalaman (Benefit, Bobot 0.3), Pendidikan (Benefit, 0.2), Teknis (Benefit, 0.3), Soft Skills (Benefit, 0.2)</p>
@@ -190,8 +212,21 @@
                             <!-- Hasil akan muncul di sini -->
                         </tbody>
                     </table>
+
+                    <button class="btn btn-success w-100 mt-3" id="downloadPdfBtn">
+                        <i class="fas fa-file-pdf"></i> Download Laporan PDF
+                    </button>
+
+
+                    <!-- TEST --->
+                     <hr>
+                        <h4 class="text-center mt-4">📊 Proses Perhitungan TOPSIS</h4>
+                        <div id="topsisSteps"></div>
+                     <!-- END TEST --->
+
                 </div>
             </div>
+</div>
             <div class="alert alert-secondary mt-4">
     <h5><i class="fas fa-list-ol"></i> Skala Penilaian Kriteria</h5>
 
@@ -264,6 +299,24 @@
                 }
             });
         });
+
+        function renderCandidateList() {
+    const tbody = document.getElementById("candidateList");
+    tbody.innerHTML = "";
+
+    candidates.forEach(c => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${c.name}</td>
+                <td>${c.criteria[0]}</td>
+                <td>${c.criteria[1]}</td>
+                <td>${c.criteria[2]}</td>
+                <td>${c.criteria[3]}</td>
+            </tr>
+        `;
+    });
+}
+
         document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
         document.getElementById('candidateForm').addEventListener('submit', function(e) {
@@ -274,7 +327,7 @@
             const tech = parseFloat(document.getElementById('tech').value);
             const soft = parseFloat(document.getElementById('soft').value);
             candidates.push({ name, criteria: [exp, edu, tech, soft] });
-            alert('Kandidat ditambahkan dengan sukses!');
+            renderCandidateList();   // ← tambahkan ini
             this.reset();
         });
 
@@ -289,57 +342,110 @@
             this.disabled = true;
 
             setTimeout(() => {
-                // Bobot kriteria (sesuaikan jika perlu)
-                const weights = [0.3, 0.2, 0.3, 0.2]; // Pengalaman, Pendidikan, Teknis, Soft Skills
-                const isBenefit = [true, true, true, true]; // Semua benefit
 
-                // Matriks keputusan
-                const matrix = candidates.map(c => c.criteria);
+            const weights = [0.3, 0.2, 0.3, 0.2];
+            const matrix = candidates.map(c => c.criteria);
 
-                // Normalisasi
-                const normalized = [];
-                for (let j = 0; j < matrix[0].length; j++) {
-                    const col = matrix.map(row => row[j]);
-                    const norm = Math.sqrt(col.reduce((sum, val) => sum + val ** 2, 0));
-                    normalized.push(col.map(val => val / norm));
-                }
-                const normMatrix = normalized[0].map((_, i) => normalized.map(col => col[i]));
+            // ================= 1. MATRKS KEPUTUSAN =================
+            let html = "<h5>1️⃣ Matriks Keputusan (X)</h5><table class='table table-bordered'><tr><th>Nama</th><th>Pengalaman</th><th>Pendidikan</th><th>Teknis</th><th>Soft Skills</th></tr>";
+            candidates.forEach(c => {
+            html += `<tr><td>${c.name}</td><td>${c.criteria.join("</td><td>")}</td></tr>`;
+            });
+            html += "</table>";
 
-                // Matriks terbobot
-                const weighted = normMatrix.map(row => row.map((val, j) => val * weights[j]));
+            // ================= 2. NORMALISASI =================
+            const normalized = [];
+            for (let j = 0; j < matrix[0].length; j++) {
+            const col = matrix.map(row => row[j]);
+            const norm = Math.sqrt(col.reduce((s, v) => s + v*v, 0));
+            normalized.push(col.map(val => val / norm));
+            }
+            const normMatrix = normalized[0].map((_, i) => normalized.map(col => col[i]));
 
-                // Ideal positif dan negatif
-                const idealPositive = weights.map((_, j) => Math.max(...weighted.map(row => row[j])));
-                const idealNegative = weights.map((_, j) => Math.min(...weighted.map(row => row[j])));
+            html += "<h5>2️⃣ Matriks Normalisasi (R)</h5><table class='table table-bordered'>";
+            normMatrix.forEach(row => {
+            html += `<tr><td>${row.map(v => v.toFixed(4)).join("</td><td>")}</td></tr>`;
+            });
+            html += "</table>";
 
-                // Jarak ke ideal
-                const distancesPositive = weighted.map(row => Math.sqrt(row.reduce((sum, val, j) => sum + (val - idealPositive[j]) ** 2, 0)));
-                const distancesNegative = weighted.map(row => Math.sqrt(row.reduce((sum, val, j) => sum + (val - idealNegative[j]) ** 2, 0)));
+            // ================= 3. TERBOBOT =================
+            const weighted = normMatrix.map(row => row.map((val, j) => val * weights[j]));
+            html += "<h5>3️⃣ Matriks Terbobot (Y)</h5><table class='table table-bordered'>";
+            weighted.forEach(row => {
+            html += `<tr><td>${row.map(v => v.toFixed(4)).join("</td><td>")}</td></tr>`;
+            });
+            html += "</table>";
 
-                // Closeness coefficient
-                const closeness = distancesPositive.map((dp, i) => distancesNegative[i] / (dp + distancesNegative[i]));
+            // ================= 4. A+ & A- =================
+            const idealPositive = weights.map((_, j) => Math.max(...weighted.map(row => row[j])));
+            const idealNegative = weights.map((_, j) => Math.min(...weighted.map(row => row[j])));
 
-                // Ranking
-                const ranked = candidates.map((c, i) => ({ ...c, closeness: closeness[i] }))
-                    .sort((a, b) => b.closeness - a.closeness);
+            html += `<h5>4️⃣ Solusi Ideal</h5>
+            <p><b>A⁺</b> = ${idealPositive.map(v => v.toFixed(4)).join(", ")}</p>
+            <p><b>A⁻</b> = ${idealNegative.map(v => v.toFixed(4)).join(", ")}</p>`;
 
-                // Tampilkan hasil
-                const tbody = document.getElementById('resultsBody');
-                tbody.innerHTML = '';
-                ranked.forEach((c, index) => {
-                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
-                    const row = `<tr>
-                        <td>${medal} ${index + 1}</td>
-                        <td>${c.name}</td>
-                        <td>${c.closeness.toFixed(4)}</td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
+            // ================= 5. D+ & D- =================
+            const dPlus = [];
+            const dMinus = [];
+            weighted.forEach(row => {
+            dPlus.push(Math.sqrt(row.reduce((s, v, j) => s + (v - idealPositive[j])**2, 0)));
+            dMinus.push(Math.sqrt(row.reduce((s, v, j) => s + (v - idealNegative[j])**2, 0)));
+            });
 
-                loading.classList.remove('show');
-                this.disabled = false;
-            }, 2000); // Simulasi loading 2 detik
+            html += "<h5>5️⃣ Jarak D⁺ dan D⁻</h5>";
+            dPlus.forEach((v, i) => {
+            html += `<p>${candidates[i].name}: D⁺=${v.toFixed(4)} | D⁻=${dMinus[i].toFixed(4)}</p>`;
+            });
+
+            // ================= 6. NILAI PREFERENSI =================
+            const closeness = dPlus.map((dp, i) => dMinus[i] / (dp + dMinus[i]));
+            html += "<h5>6️⃣ Nilai Preferensi (Ci)</h5>";
+            closeness.forEach((v, i) => {
+            html += `<p>${candidates[i].name} = ${v.toFixed(4)}</p>`;
+            });
+
+            document.getElementById("topsisSteps").innerHTML = html;
+
+            // ================= RANKING =================
+            const ranked = candidates.map((c, i) => ({ ...c, closeness: closeness[i] }))
+            .sort((a, b) => b.closeness - a.closeness);
+
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            ranked.forEach((c, index) => {
+            tbody.innerHTML += `<tr>
+                <td>${index+1}</td>
+                <td>${c.name}</td>
+                <td>${c.closeness.toFixed(4)}</td>
+            </tr>`;
+            });
+
+            loading.classList.remove('show');
+            this.disabled = false;
+
+            }, 2000);
+
         });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <script>
+document.getElementById("downloadPdfBtn").addEventListener("click", function () {
+
+    const element = document.getElementById("reportArea");
+
+    const opt = {
+        margin: 10,
+        filename: 'Laporan-TOPSIS.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+});
+
+</script>
+
 </body>
 </html>
