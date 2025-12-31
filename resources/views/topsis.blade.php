@@ -173,22 +173,28 @@
 
 <div id="reportArea">
             <div class="card-custom mt-3 mb-5">
-    <h4 class="text-center"><i class="fas fa-users"></i> Daftar Kandidat</h4>
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Nama</th>
-                <th>Pengalaman</th>
-                <th>Pendidikan</th>
-                <th>Teknis</th>
-                <th>Soft Skills</th>
-            </tr>
-        </thead>
-        <tbody id="candidateList">
-            <!-- Data kandidat tampil disini -->
-        </tbody>
-    </table>
+    <h4 class="text-center">
+        <i class="fas fa-users"></i> Daftar Kandidat
+    </h4>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Pengalaman</th>
+                    <th>Pendidikan</th>
+                    <th>Teknis</th>
+                    <th>Soft Skills</th>
+                </tr>
+            </thead>
+            <tbody id="candidateList">
+                <!-- Data kandidat tampil disini -->
+            </tbody>
+        </table>
+    </div>
 </div>
+
 
 
             <div class="col-12 mb-4">
