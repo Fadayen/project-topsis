@@ -414,57 +414,183 @@ html += `
 
 
             // ================= 2. NORMALISASI =================
-            const normalized = [];
-            for (let j = 0; j < matrix[0].length; j++) {
-            const col = matrix.map(row => row[j]);
-            const norm = Math.sqrt(col.reduce((s, v) => s + v*v, 0));
-            normalized.push(col.map(val => val / norm));
-            }
-            const normMatrix = normalized[0].map((_, i) => normalized.map(col => col[i]));
+const normalized = [];
+for (let j = 0; j < matrix[0].length; j++) {
+    const col = matrix.map(row => row[j]);
+    const norm = Math.sqrt(col.reduce((s, v) => s + v * v, 0));
+    normalized.push(col.map(val => val / norm));
+}
 
-            html += "<h5>2️⃣ Matriks Normalisasi (R)</h5><table class='table table-bordered'>";
-            normMatrix.forEach(row => {
-            html += `<tr><td>${row.map(v => v.toFixed(4)).join("</td><td>")}</td></tr>`;
-            });
-            html += "</table>";
+const normMatrix = normalized[0].map((_, i) => normalized.map(col => col[i]));
+
+html += `
+<h5 class="mt-4">2️⃣ Matriks Normalisasi (R)</h5>
+
+<div class="table-responsive">
+<table class="table table-bordered text-center align-middle">
+    <thead>
+        <tr>
+            <th>Pengalaman</th>
+            <th>Pendidikan</th>
+            <th>Teknis</th>
+            <th>Soft Skills</th>
+        </tr>
+    </thead>
+    <tbody>
+`;
+
+normMatrix.forEach(row => {
+    html += `
+        <tr>
+            <td>${row[0].toFixed(4)}</td>
+            <td>${row[1].toFixed(4)}</td>
+            <td>${row[2].toFixed(4)}</td>
+            <td>${row[3].toFixed(4)}</td>
+        </tr>
+    `;
+});
+
+html += `
+    </tbody>
+</table>
+</div>
+`;
+
 
             // ================= 3. TERBOBOT =================
-            const weighted = normMatrix.map(row => row.map((val, j) => val * weights[j]));
-            html += "<h5>3️⃣ Matriks Terbobot (Y)</h5><table class='table table-bordered'>";
-            weighted.forEach(row => {
-            html += `<tr><td>${row.map(v => v.toFixed(4)).join("</td><td>")}</td></tr>`;
-            });
-            html += "</table>";
+const weighted = normMatrix.map(row => row.map((val, j) => val * weights[j]));
+
+html += `
+<h5 class="mt-4">3️⃣ Matriks Terbobot (Y)</h5>
+
+<div class="table-responsive">
+<table class="table table-bordered text-center align-middle">
+    <thead>
+        <tr>
+            <th>Pengalaman</th>
+            <th>Pendidikan</th>
+            <th>Teknis</th>
+            <th>Soft Skills</th>
+        </tr>
+    </thead>
+    <tbody>
+`;
+
+weighted.forEach(row => {
+    html += `
+        <tr>
+            <td>${row[0].toFixed(4)}</td>
+            <td>${row[1].toFixed(4)}</td>
+            <td>${row[2].toFixed(4)}</td>
+            <td>${row[3].toFixed(4)}</td>
+        </tr>
+    `;
+});
+
+html += `
+    </tbody>
+</table>
+</div>
+`;
+
 
             // ================= 4. A+ & A- =================
-            const idealPositive = weights.map((_, j) => Math.max(...weighted.map(row => row[j])));
-            const idealNegative = weights.map((_, j) => Math.min(...weighted.map(row => row[j])));
+const idealPositive = weights.map((_, j) => Math.max(...weighted.map(row => row[j])));
+const idealNegative = weights.map((_, j) => Math.min(...weighted.map(row => row[j])));
 
-            html += `<h5>4️⃣ Solusi Ideal</h5>
-            <p><b>A⁺</b> = ${idealPositive.map(v => v.toFixed(4)).join(", ")}</p>
-            <p><b>A⁻</b> = ${idealNegative.map(v => v.toFixed(4)).join(", ")}</p>`;
+html += `
+<h5 class="mt-4">4️⃣ Solusi Ideal</h5>
+
+<div class="row">
+    <div class="col-12 col-md-6 mb-2">
+        <div class="card p-2 text-center">
+            <strong>A⁺ (Ideal Positif)</strong>
+            <div>${idealPositive.map(v => v.toFixed(4)).join(" | ")}</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card p-2 text-center">
+            <strong>A⁻ (Ideal Negatif)</strong>
+            <div>${idealNegative.map(v => v.toFixed(4)).join(" | ")}</div>
+        </div>
+    </div>
+</div>
+`;
+
 
             // ================= 5. D+ & D- =================
-            const dPlus = [];
-            const dMinus = [];
-            weighted.forEach(row => {
-            dPlus.push(Math.sqrt(row.reduce((s, v, j) => s + (v - idealPositive[j])**2, 0)));
-            dMinus.push(Math.sqrt(row.reduce((s, v, j) => s + (v - idealNegative[j])**2, 0)));
-            });
+const dPlus = [];
+const dMinus = [];
 
-            html += "<h5>5️⃣ Jarak D⁺ dan D⁻</h5>";
-            dPlus.forEach((v, i) => {
-            html += `<p>${candidates[i].name}: D⁺=${v.toFixed(4)} | D⁻=${dMinus[i].toFixed(4)}</p>`;
-            });
+weighted.forEach(row => {
+    dPlus.push(Math.sqrt(row.reduce((s, v, j) => s + (v - idealPositive[j]) ** 2, 0)));
+    dMinus.push(Math.sqrt(row.reduce((s, v, j) => s + (v - idealNegative[j]) ** 2, 0)));
+});
+
+html += `
+<h5 class="mt-4">5️⃣ Jarak D⁺ dan D⁻</h5>
+
+<div class="table-responsive">
+<table class="table table-bordered text-center">
+    <thead>
+        <tr>
+            <th>Nama</th>
+            <th>D⁺</th>
+            <th>D⁻</th>
+        </tr>
+    </thead>
+    <tbody>
+`;
+
+dPlus.forEach((v, i) => {
+    html += `
+        <tr>
+            <td>${candidates[i].name}</td>
+            <td>${v.toFixed(4)}</td>
+            <td>${dMinus[i].toFixed(4)}</td>
+        </tr>
+    `;
+});
+
+html += `
+    </tbody>
+</table>
+</div>
+`;
+
 
             // ================= 6. NILAI PREFERENSI =================
-            const closeness = dPlus.map((dp, i) => dMinus[i] / (dp + dMinus[i]));
-            html += "<h5>6️⃣ Nilai Preferensi (Ci)</h5>";
-            closeness.forEach((v, i) => {
-            html += `<p>${candidates[i].name} = ${v.toFixed(4)}</p>`;
-            });
+const closeness = dPlus.map((dp, i) => dMinus[i] / (dp + dMinus[i]));
 
-            document.getElementById("topsisSteps").innerHTML = html;
+html += `
+<h5 class="mt-4">6️⃣ Nilai Preferensi (Ci)</h5>
+
+<div class="table-responsive">
+<table class="table table-bordered text-center">
+    <thead>
+        <tr>
+            <th>Nama Kandidat</th>
+            <th>Nilai Ci</th>
+        </tr>
+    </thead>
+    <tbody>
+`;
+
+closeness.forEach((v, i) => {
+    html += `
+        <tr>
+            <td>${candidates[i].name}</td>
+            <td>${v.toFixed(4)}</td>
+        </tr>
+    `;
+});
+
+html += `
+    </tbody>
+</table>
+</div>
+`;
+
 
             // ================= RANKING =================
             const ranked = candidates.map((c, i) => ({ ...c, closeness: closeness[i] }))
