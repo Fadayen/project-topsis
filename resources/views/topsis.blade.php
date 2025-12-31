@@ -118,6 +118,20 @@
         .loading.show {
             display: block;
         }
+
+        @media (max-width: 576px) {
+    #topsisSteps table {
+        min-width: 600px;
+    }
+
+    #topsisSteps th,
+    #topsisSteps td {
+        white-space: nowrap;
+        font-size: 12px;
+        padding: 6px;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -362,12 +376,42 @@
             const weights = [0.3, 0.2, 0.3, 0.2];
             const matrix = candidates.map(c => c.criteria);
 
-            // ================= 1. MATRKS KEPUTUSAN =================
-            let html = "<h5>1️⃣ Matriks Keputusan (X)</h5><table class='table table-bordered'><tr><th>Nama</th><th>Pengalaman</th><th>Pendidikan</th><th>Teknis</th><th>Soft Skills</th></tr>";
-            candidates.forEach(c => {
-            html += `<tr><td>${c.name}</td><td>${c.criteria.join("</td><td>")}</td></tr>`;
-            });
-            html += "</table>";
+            // ================= 1. MATRKS KEPUTUSAN (X) =================
+let html = `
+<h5 class="mt-4">1️⃣ Matriks Keputusan (X)</h5>
+
+<div class="table-responsive">
+<table class="table table-bordered text-center align-middle">
+    <thead>
+        <tr>
+            <th>Nama</th>
+            <th>Pengalaman</th>
+            <th>Pendidikan</th>
+            <th>Teknis</th>
+            <th>Soft Skills</th>
+        </tr>
+    </thead>
+    <tbody>
+`;
+
+candidates.forEach(c => {
+    html += `
+        <tr>
+            <td>${c.name}</td>
+            <td>${c.criteria[0]}</td>
+            <td>${c.criteria[1]}</td>
+            <td>${c.criteria[2]}</td>
+            <td>${c.criteria[3]}</td>
+        </tr>
+    `;
+});
+
+html += `
+    </tbody>
+</table>
+</div>
+`;
+
 
             // ================= 2. NORMALISASI =================
             const normalized = [];
